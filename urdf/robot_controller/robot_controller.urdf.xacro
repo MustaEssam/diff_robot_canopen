@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://wiki.ros.org/xacro" name="delivery_robot">
+    <!-- <xacro:include filename="$(find diff_robot_canopen)/urdf/robot_controller/robot_controller.macro.xacro"/> -->
+    <xacro:include filename="$(find diff_robot_canopen)/urdf/robot_core.xacro"/>
+    <xacro:include filename="$(find diff_robot_canopen)/urdf/robot_controller/robot_controller.ros2_control.xacro"/>
+
+    <!-- <link name="world" />
+
+    <xacro:robot_control_robot
+        name="delivery_robot"
+        prefix=""
+        parent="world"
+        >
+            <origin xyz="0 0 0" rpy="0 0 0" />
+    </xacro:robot_control_robot> -->
+
+    <xacro:robot_control_control
+        name="delivery_robot"
+        prefix=""
+        bus_config="$(find diff_robot_canopen)/config/robot_control/bus.yml"
+        master_config="$(find diff_robot_canopen)/config/robot_control/master.dcf"
+        can_interface_name="can0"
+        master_bin="" />
+</robot>

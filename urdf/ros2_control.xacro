@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <!-- add the arg directly from the launch file, no need to set default values-->
+    <xacro:property name="controller_type" value="$(arg controller_type)" />
+
+    <xacro:property name="name" value="delivery_robot" />
+    <xacro:property name="prefix" value="" />
+    <xacro:property name="bus_config" value="$(arg bus_config)" />
+    <xacro:property name="master_config" value="$(arg master_config)" />
+    <xacro:property name="can_interface_name" value="$(arg can_interface_name)" />
+    <xacro:property name="master_bin" value="" />
+    
+    <xacro:unless value="${controller_type == 'gazebo_plugin'}">
+        <ros2_control name="diffdrive_ros2_control" type="system">
+            <hardware>
+                <xacro:if value="${controller_type == 'gazebo_ros2_control'}">
+                    <plugin>gazebo_ros2_control/GazeboSystem</plugin>
+                </xacro:if>
+                <xacro:if value="${controller_type == 'hw_ros2_control'}">
+                    <plugin>canopen_ros2_control/RobotSystem</plugin>
+                    <param name="bus_config">${bus_config}</param>
+                    <param name="master_config">${master_config}</param>
+                    <param name="can_interface_name">${can_interface_name}</param>
+                    <param name="master_bin">"${master_bin}"</param>
+                </xacro:if>
+            </hardware>
+            <joint name="left_wheel_joint">
+                <param name="device_name">left_wheel_joint</param>
+                <param name="node_id">14</param>
+                <command_interface name="velocity"/>
+                <state_interface name="velocity"/>
+                <state_interface name="position"/>
+            </joint>
+            <joint name="right_wheel_joint">
+                <param name="device_name">right_wheel_joint</param>
+                <param name="node_id">15</param>
+                <command_interface name="velocity"/>
+                <state_interface name="velocity"/>
+                <state_interface name="position"/>
+            </joint>
+        </ros2_control>
+    </xacro:unless>
+
+</robot>

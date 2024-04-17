@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" >
+
+    <xacro:property name="chassis_length" value="0.5"/>
+    <xacro:property name="chassis_width" value="0.63"/>
+    <xacro:property name="chassis_height" value="0.8"/>
+    <xacro:property name="chassis_mass" value="5.0"/>
+    <xacro:property name="wheel_radius" value="0.12"/>
+    <xacro:property name="wheel_thickness" value="0.09"/>
+    <xacro:property name="wheel_mass" value="9.0"/>
+    <xacro:property name="wheel_offset_x" value="0.5"/>
+    <xacro:property name="wheel_offset_y" value="${(chassis_width/2) + (wheel_thickness/2)}"/>
+    <xacro:property name="wheel_offset_z" value="0.01"/>
+    <xacro:property name="caster_wheel_radius" value="${(wheel_radius - wheel_offset_z)/2}"/>
+    <xacro:property name="caster_wheel_mass" value="3.0"/>
+    <xacro:property name="caster_wheel_offset_x" value="${wheel_offset_x - caster_wheel_radius}"/>
+    <xacro:property name="caster_wheel_offset_z" value="${wheel_radius - caster_wheel_radius}"/>
+    <xacro:property name="camera_offset_z" value="${0.75 - wheel_radius}"/>
+    <xacro:property name="camera_offset_x" value="0.0"/>
+    <xacro:property name="lidar_offset_z" value="${0.295 - wheel_radius}"/>
+    <xacro:property name="lidar_offset_x" value="0.12"/>
+    <xacro:property name="gps_offset_z" value="${0.92 - wheel_radius}"/>
+    <xacro:property name="gps_offset_x" value="-0.1"/>
+    <xacro:property name="imu_offset_z" value="${0.92 - wheel_radius}"/>
+    <xacro:property name="imu_offset_x" value="-0.2"/>
+
+</robot>
