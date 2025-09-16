@@ -1,9 +1,14 @@
 <?xml version="1.0"?>
+<!--
+  This file defines the core structure of the robot, including the chassis, wheels, and sensors.
+-->
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" >
 
+    <!-- Included files -->
     <xacro:include filename="inertial_macros.xacro"/>
     <xacro:include filename="common_properties.xacro"/>
 
+    <!-- Material definitions -->
     <material name="white">
         <color rgba="1 1 1 1" />
     </material>
@@ -25,11 +30,12 @@
     </material>
 
     <!-- BASE LINK -->
-
+    <!-- The base_link is the central reference frame for the robot. -->
     <link name="base_link">
     </link>
 
     <!-- BASE_FOOTPRINT LINK -->
+    <!-- The base_footprint is located at the projection of the base_link on the ground. -->
     <link name="base_footprint">
     </link>
 
@@ -40,7 +46,7 @@
     </joint>
 
     <!-- CHASSIS LINK -->
-
+    <!-- The chassis is the main body of the robot. -->
     <joint name="chassis_joint" type="fixed">
         <parent link="base_link"/>
         <child link="chassis"/>
@@ -71,7 +77,6 @@
     </gazebo>
 
     <!-- LEFT WHEEL LINK -->
-
     <joint name="left_wheel_joint" type="continuous">
         <parent link="base_link"/>
         <child link="left_wheel"/>
@@ -88,7 +93,6 @@
         </visual>
         <collision>
             <geometry>
-                <!-- <sphere radius="${wheel_radius}"/> -->
                 <cylinder radius="${wheel_radius}" length="${wheel_thickness}"/>
             </geometry>
         </collision>
@@ -100,17 +104,16 @@
     <gazebo reference="left_wheel">
         <material>Gazebo/Blue</material>
         <!-- kp and kd for rubber -->
-        <kp>1000000.0</kp> <!--contact stiffness-->
-        <kd>100.0</kd> <!--damping-->
-        <mu1>1.0</mu1>
-        <mu2>1.0</mu2>
+        <kp>1000000.0</kp> <!-- Contact stiffness -->
+        <kd>100.0</kd>     <!-- Damping -->
+        <mu1>1.0</mu1>     <!-- Friction coefficient -->
+        <mu2>1.0</mu2>     <!-- Friction coefficient -->
         <fdir1>1 0 0</fdir1>
         <maxVel>1.0</maxVel>
-        <minDepth>0.005</minDepth> <!--contacts gripping, 0 also works-->
+        <minDepth>0.005</minDepth> <!-- Contacts gripping -->
     </gazebo>
 
     <!-- RIGHT WHEEL LINK -->
-
     <joint name="right_wheel_joint" type="continuous">
         <parent link="base_link"/>
         <child link="right_wheel"/>
@@ -127,7 +130,6 @@
         </visual>
         <collision>
             <geometry>
-                <!-- <sphere radius="${wheel_radius}"/> -->
                 <cylinder radius="${wheel_radius}" length="${wheel_thickness}"/>
             </geometry>
         </collision>
@@ -139,22 +141,20 @@
     <gazebo reference="right_wheel">
         <material>Gazebo/Blue</material>
         <!-- kp and kd for rubber -->
-        <kp>1000000.0</kp> <!--contact stiffness-->
-        <kd>100.0</kd> <!--damping-->
-        <mu1>1.0</mu1>
-        <mu2>1.0</mu2>
+        <kp>1000000.0</kp> <!-- Contact stiffness -->
+        <kd>100.0</kd>     <!-- Damping -->
+        <mu1>1.0</mu1>     <!-- Friction coefficient -->
+        <mu2>1.0</mu2>     <!-- Friction coefficient -->
         <fdir1>1 0 0</fdir1>
         <maxVel>1.0</maxVel>
-        <minDepth>0.005</minDepth> <!--contacts gripping, 0 also works-->
+        <minDepth>0.005</minDepth> <!-- Contacts gripping -->
     </gazebo>
 
 
     <!-- CASTER WHEEL LINK -->
-
     <joint name="caster_wheel_joint" type="continuous">
         <parent link="base_link"/>
         <child link="caster_wheel"/>
-        <!-- <origin xyz="${caster_wheel_offset_x} 0 ${caster_wheel_offset_z}" rpy="${pi/2} 0 0" /> -->
         <origin xyz="${-caster_wheel_offset_x} 0 ${-caster_wheel_offset_z}" rpy="${pi/2} 0 0" />
         <axis xyz="0 0 -1"/>
     </joint>
@@ -162,46 +162,21 @@
     <link name="caster_wheel">
         <visual>
             <geometry>
-                <!-- <sphere radius="${caster_wheel_radius}"/> -->
                 <cylinder radius="${caster_wheel_radius}" length="${wheel_thickness}"/>
             </geometry>
             <material name="white"/>
         </visual>
         <collision>
             <geometry>
-                <!-- <sphere radius="${caster_wheel_radius}"/> -->
                 <cylinder radius="${caster_wheel_radius}" length="${wheel_thickness}"/>
             </geometry>
         </collision>
-        <!-- <xacro:inertial_sphere mass="${caster_wheel_mass}" radius="${caster_wheel_radius}"> -->
         <xacro:inertial_cylinder mass="${caster_wheel_mass}" length="${wheel_thickness}" radius="${caster_wheel_radius}">
             <origin xyz="0 0 0" rpy="0 0 0"/>
         </xacro:inertial_cylinder>
-        <!-- </xacro:inertial_sphere> -->
     </link>
 
-    <!--The robot will always slip no matter the collision shape of the two wheels is, this only incase of the caster wheel is fixed link and no friction is added, read below-->
-
-    <!--For left and right wheels: -->
-    <!--The right way to solve the slip and flicker contact points is by adding stiffness & damping also force direction helps, these values are for rubber wheels-->
-    <!--The collision alone will not fix the problem, as specified in gazebo guide, adding the factors will help stablize the contact points with the ground, -->
-    <!-- also collision paramter is missing the friction tags, it can be added but you have to change the file to sdf format, so we added in gazebo tags instead-->
-    <!--As per gazebo guide, adding a fixed joint to a link (which is caster_wheel) and make contact with the ground will produce bad results, -->
-    <!-- you can check the center of mass and inertia, both will have a very strange form and shifted location, this due to gazebo engine failed to compute this fixed caster link-->
-    <!--The best solution for this as per gazebo guide is to make the (base_link) frame contain the caster wheel, becasue it's already fixed, then gazebo will produce the right results-->
-    <!--Since right now we can't produce a complex shape without a mesh, another way to fix this issue is to change this joint to a rotating joint-->
-    <!--Gazebo then will normally fix all paramters for the inertia and center of mass, also to make it work with gazebo_ros2_control, add extra_joints to the joints broadcaster in controller.yaml-->
-
-    <!--For caster wheel: -->
-    <!--the below params are optional, since now the caster is rotating so we fixed the center of mass and inertia problem that will make the robot slip-->
-    <!--if the below params not added the contacts for the caster will flicker, this will not change any behavior of the robot, since the caster is not meant to touch the ground,-->
-    <!--for clarity we added the kp and kd values so that the contacts will no longer flicker, but this means that the caster will now have an effect on the behavior of the robot-->
-    <!--the shape doesn't matter as the point of contact will produce friction and hence hinder the robot movements during rotation and backward movement as well #this effect was tested#-->
-    <!--we keep the values of kp and kd but also add a zero friction so that the caster wheel will slip on the surface will maintaining stable contact-->
-    <!--we don't want the caster wheel to have any effect on the robot movements, later it should  be combined with chassis as one part-->
-    
-    <!--all effects were tested, further edit required, the gripping affects the slip of the robot after stopping, also the mu1 and mu2 factors need more tuning-->
-
+    <!-- Gazebo simulation parameters for the caster wheel -->
     <gazebo reference="caster_wheel">
         <material>Gazebo/White</material>
         <kp>1000000.0</kp>
@@ -209,8 +184,8 @@
         <fdir1>1 0 0</fdir1>
         <maxVel>1.0</maxVel>
         <minDepth>0.0</minDepth>
-        <mu1>0.0</mu1>
-        <mu2>0.0</mu2>
+        <mu1>0.0</mu1> <!-- Zero friction to prevent interference with robot motion -->
+        <mu2>0.0</mu2> <!-- Zero friction to prevent interference with robot motion -->
     </gazebo>
 
 </robot>

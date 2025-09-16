@@ -1,15 +1,22 @@
+# Options for the CANopen bus
 options:
+  # Path to the device configuration file (DCF)
   dcf_path: "@BUS_CONFIG_PATH@"
 
+# Configuration for the CANopen master
 master:
   node_id: 1
   driver: "ros2_canopen::MasterDriver"
   package: "canopen_master_driver"
+  # Baudrate of the CAN bus
   # baudrate: 1000
+  # Heartbeat configuration
   # heartbeat_multiplier: 1
   # heartbeat_consumer: true
   # heartbeat_producer: 100
+  # Emergency message inhibit time
   # emcy_inhibit_time: 0
+  # Synchronization message period (in microseconds)
   sync_period: 10000
   # sync_window: 0
   # sync_overflow: 0
@@ -20,41 +27,52 @@ master:
   # start_all_nodes: true
   # reset_all_nodes: true
   # stop_all_nodes: false
-  boot_time: 500 # The timeout for booting mandatory slaves in ms (default: 0, see object 1F89).
+  # Timeout for booting mandatory slaves in ms (default: 0, see object 1F89)
+  boot_time: 500
 
+# Default settings for all CANopen slaves
 defaults:
+  # Path to the electronic data sheet (EDS) file
   dcf: "dchcan.eds"
+  # Driver for the slave
   driver: "ros2_canopen::Cia402Driver"
   package: "canopen_402_driver"
+  # Heartbeat configuration
   # heartbeat_multiplier: 1
   # heartbeat_consumer: false
   # heartbeat_producer: 0
   # error_behavior: {}
-  boot: true #Specifies whether the slave will be configured and booted by the master (default: true, see bit 2 in object 1F81).
+  # Specifies whether the slave will be configured and booted by the master
+  boot: true
+  # Enable lazy loading of the slave
   enable_lazy_load: true
-  # mandatory: false # Specifies whether the slave is mandatory (default: false, see bit 3 in object 1F81).
+  # mandatory: false # Specifies whether the slave is mandatory
   # reset_communication: true
-  polling: false # Enables polling of the drive status. If true, period will be used to run a ros2 timer as update loop. If false, the update loop will be triggered by the sync signal and directly executed in the canopen realtime loop.
+  # Enables polling of the drive status
+  polling: false
   period: 10
-  scale_pos_to_dev: 2607.5946   #scale_pos_to_dev = 16384 / (2 * pi) = 2607.5946      "16384 is motor resolution"
-  scale_pos_from_dev: 0.0003835   #scale_pos_from_dev = (2 * pi) / 16384 = 0.0003835
-  scale_vel_to_dev: 26075.946   #scale_vel_to_dev = (16384 * 10) / (2 * pi) = 26075.946
-  scale_vel_from_dev: 0.00003835    #scale_vel_from_dev = (2 * pi) / (16384 * 10) = 0.00003835
+  # Scaling factors for position and velocity, based on motor resolution my encoder has 16384 counts per revolution
+  scale_pos_to_dev: 2607.5946   # 16384 / (2 * pi)
+  scale_pos_from_dev: 0.0003835   # (2 * pi) / 16384
+  scale_vel_to_dev: 26075.946   # (16384 * 10) / (2 * pi)
+  scale_vel_from_dev: 0.00003835    # (2 * pi) / (16384 * 10)
   # position_mode: 1
   # switching_state: 5 # (Operation_Enable), state for mode switching
   velocity_mode: 1
   # torque_mode: 1
-  sdo: # SDO executed during config
+  # SDO executed during configuration
+  sdo:
     - {index: 0x6081, sub_index: 0, value: 10} # Set velocity
-    - {index: 0x6083, sub_index: 0, value: 200} # Set acceleration "10 counts/sec^2"
-    - {index: 0x6084, sub_index: 0, value: 500} # Set deceleration "10 counts/sec^2"
+    - {index: 0x6083, sub_index: 0, value: 200} # Set acceleration
+    - {index: 0x6084, sub_index: 0, value: 500} # Set deceleration
     - {index: 0x60F9, sub_index: 1, value: 400} # Set velocity loop P gain
     - {index: 0x60F9, sub_index: 2, value: 200} # Set velocity loop I gain
-    - {index: 0x6085, sub_index: 0, value: 50} # Set quickstop deceleration "10 counts/sec^2"
+    - {index: 0x6085, sub_index: 0, value: 50} # Set quickstop deceleration
     - {index: 0x6098, sub_index: 0, value: 0} # Set default homing mode to 0
     - {index: 0x60C2, sub_index: 1, value: 50} # Set interpolation time for cyclic modes to 50 ms
-    - {index: 0x60C2, sub_index: 2, value: -3} #
-  tpdo: # TPDO needed statusword, actual velocity, actual position, mode of operation
+    - {index: 0x60C2, sub_index: 2, value: -3}
+  # TPDO mapping
+  tpdo:
     1:
       enabled: true
       cob_id: "auto"
@@ -73,7 +91,8 @@ defaults:
       enabled: false
     4:
       enabled: false
-  rpdo: # RPDO needed controlword, target position, target velocity, mode of operation
+  # RPDO mapping
+  rpdo:
     1:
       enabled: true
       cob_id: "auto"
@@ -87,6 +106,7 @@ defaults:
       - {index: 0x607A, sub_index: 0} # target position
       - {index: 0x60FF, sub_index: 0} # target velocity
 
+# List of CANopen nodes
 nodes:
   right_wheel_joint:
     node_id: 15

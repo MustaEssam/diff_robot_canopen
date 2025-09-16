@@ -1,55 +1,60 @@
+# Configuration for the controller manager
 controller_manager:
   ros__parameters:
     update_rate: 100  # Hz
+
+    # Configuration for the joint state broadcaster
     joint_state_broadcaster:
       type: joint_state_broadcaster/JointStateBroadcaster
 
+    # Configuration for the differential drive controller
     diff_drive_controller:
       type: diff_drive_controller/DiffDriveController
 
+# Configuration for the joint state broadcaster
 joint_state_broadcaster:
   ros__parameters:
-    joints: # affected by hardware interface
+    # List of joints to be published by the joint state broadcaster
+    joints:
       - left_wheel_joint
       - right_wheel_joint
-    # interfaces:
-    #   - position
-    #   - velocity
-    extra_joints: # not affected by hardware interface
+    # List of extra joints to be published
+    extra_joints:
       - caster_wheel_joint
-    # map_interface_to_joint_state:  # rename custom interfaces to default names
-        # custom_interface: position
     use_local_topics: false
 
+# Configuration for the differential drive controller
 diff_drive_controller:
   ros__parameters:
+    # Names of the left and right wheel joints
     left_wheel_names: ['left_wheel_joint']
     right_wheel_names: ['right_wheel_joint']
 
-    wheel_separation: 0.59 # 0.295*2
+    # Robot physical parameters
+    wheel_separation: 0.59 # Distance between the two wheels
     wheels_per_side: 1
-    wheel_radius: 0.12
+    wheel_radius: 0.12 # Radius of the wheels
 
+    # Multipliers for wheel separation and radius
     wheel_separation_multiplier: 1.0
     left_wheel_radius_multiplier: 1.0
     right_wheel_radius_multiplier: 1.0
 
+    # Publisher settings
     publish_rate: 50.0
     odom_frame_id: odom
     base_frame_id: base_link
     pose_covariance_diagonal : [0.001, 0.001, 0.001, 0.001, 0.001, 0.01]
     twist_covariance_diagonal: [0.001, 0.001, 0.001, 0.001, 0.001, 0.01]
 
+    # Controller settings
     open_loop: true
     enable_odom_tf: true
 
     cmd_vel_timeout: 0.5
-    #publish_limited_velocity: true
-    use_stamped_vel: false             # true -> publish a message over topic every sec, (time can be changed by frequency)
-    #velocity_rolling_window_size: 10
+    use_stamped_vel: false
 
     # Velocity and acceleration limits
-    # Whenever a min_* is unspecified, default to -max_*
     linear.x.has_velocity_limits: true
     linear.x.has_acceleration_limits: true
     linear.x.has_jerk_limits: false
